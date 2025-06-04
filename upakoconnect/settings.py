@@ -1,11 +1,12 @@
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-w$#%*g0fq)f#+o#z3s0dv+k^@ze1ufh9r^cqnc-qd+g0(1tr%x'
@@ -14,7 +15,6 @@ SECRET_KEY = 'django-insecure-w$#%*g0fq)f#+o#z3s0dv+k^@ze1ufh9r^cqnc-qd+g0(1tr%x
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 INSTALLED_APPS = [
@@ -63,11 +63,11 @@ WSGI_APPLICATION = 'upakoconnect.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'upako',
-        'USER': 'root',
-        'PASSWORD': 'Upako@12345',
-        'HOST': 'localhost',
-        'PORT': '4000',
+        'NAME': os.getenv("DB_NAME"),
+        'USER': os.getenv("DB_USER"),
+        'PASSWORD': os.getenv("DB_PASSWORD"),
+        'HOST': os.getenv("DB_HOST"),
+        'PORT': os.getenv("DB_PORT"),
     }
 }
 

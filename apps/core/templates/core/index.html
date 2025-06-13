@@ -1,0 +1,55 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+
+{% block content %}
+
+    <!-- Services Section -->
+    <section class="services section">
+
+      <div class="container">
+
+        <div class="row gy-4">
+
+          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+            <div class="service-item  position-relative">
+              <div class="icon">
+                <i class="fas fa-heartbeat"></i>
+              </div>
+              <a href="{% url 'ariseclinic:index' %}" class="stretched-link">
+                <h3>ARISE CLINIC</h3>
+              </a>
+              <p>When the mother is on our hands GOD trough his Apostle Mwamposa will visit and pray for you reguraly</p>
+            </div>
+          </div><!-- End Service Item -->
+
+          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+            <div class="service-item position-relative">
+              <div class="icon">
+                <i class="fas fa-pills"></i>
+              </div>
+              <a href="#" class="stretched-link">
+                <h3>GLOBAL FELLOWSHIP</h3>
+              </a>
+              <p>If you are going through a time of dificulties while pregnant our doctors and pastors in Arise and shine Tanzania will take time to talk with you to get out of the boundaries in Jesus name</p>
+            </div>
+          </div><!-- End Service Item -->
+
+          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+            <div class="service-item position-relative">
+              <div class="icon">
+                <i class="fas fa-hospital-user"></i>
+              </div>
+              <a href="#" class="stretched-link">
+                <h3>ARISE PARKING</h3>
+              </a>
+              <p>While waiting for the anointing from apostle, the mother gets full treatment from the doctors.</p>
+            </div>
+          </div><!-- End Service Item -->
+        </div>
+
+      </div>
+
+    </section><!-- /Services Section -->
+
+{% endblock content %}

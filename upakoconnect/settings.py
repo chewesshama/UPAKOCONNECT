@@ -22,7 +22,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    'ariseclinic',
+    'apps.core',
+    'apps.users',
+    'apps.ariseclinic',
+    'apps.globalfellowship',
     'crispy_forms',
     'django_htmx',
 ]
@@ -110,10 +113,17 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+#STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+    BASE_DIR / "static/clinic",
+    BASE_DIR / "static/core",
+    BASE_DIR / "static/users",
+    BASE_DIR / "static/global",
+]
+
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 

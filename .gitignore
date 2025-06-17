@@ -19,3 +19,7 @@ __pycache__/
 
 # Docker
 db_data/
+
+static/assets/video/background.mp4
+static/assets/video/background2.mp4
+

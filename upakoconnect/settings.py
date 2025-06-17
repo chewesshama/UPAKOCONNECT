@@ -47,7 +47,7 @@ ROOT_URLCONF = 'upakoconnect.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -58,6 +58,8 @@ TEMPLATES = [
         },
     },
 ]
+
+AUTH_USER_MODEL = 'users.CustomUser'
 
 WSGI_APPLICATION = 'upakoconnect.wsgi.application'
 
@@ -131,3 +133,9 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+LOGIN_URL = 'users:login'
+LOGIN_REDIRECT_URL = 'ariseclinic:index'
+LOGOUT_REDIRECT_URL = 'core:landing'
+

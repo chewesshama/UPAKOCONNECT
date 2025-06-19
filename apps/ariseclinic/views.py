@@ -6,12 +6,3 @@ class IndexView(LoginRequiredMixin ,TemplateView):
     template_name = "ariseclinic/home/index.html"
     
 
-#class ClinicLoginView(TemplateView):
-#    template_name = 'ariseclinic/accounts/login.html'
-    
-
-
-#class ClinicRegisterView(TemplateView):
-#    template_name = 'ariseclinic/accounts/register.html'
-    
-

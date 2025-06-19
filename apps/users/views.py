@@ -21,7 +21,10 @@ class CustomUserLoginView(LoginView):
     template_name = 'ariseclinic/accounts/login.html'
     authentication_form = CustomLoginForm
     redirect_authenticated_user = True
-
+    
+    def get_success_url(self):
+        return reverse_lazy("ariseclinic:index")
+    
 
 class UserRegisterView(SuccessMessageMixin, CreateView):
     model = CustomUser

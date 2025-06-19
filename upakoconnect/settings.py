@@ -1,7 +1,6 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv
-
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,9 +25,15 @@ INSTALLED_APPS = [
     'apps.users',
     'apps.ariseclinic',
     'apps.globalfellowship',
+    'apps.complaints',
     'crispy_forms',
     'django_htmx',
+    'multiupload',
+    "PIL",
+    'widget_tweaks',
 ]
+
+CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -38,7 +43,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
+
     'django_htmx.middleware.HtmxMiddleware',
 ]
 
@@ -124,18 +129,28 @@ STATICFILES_DIRS = [
     BASE_DIR / "static/global",
 ]
 
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_DIR = "/media/"
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# EMAIL_HOST = "smtp.gmail.com"
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = os.environ.get("shamachewes99@gmail.com")
+# EMAIL_HOST_PASSWORD = os.environ.get("")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+]
 
 LOGIN_URL = 'users:login'
-LOGIN_REDIRECT_URL = 'ariseclinic:index'
 LOGOUT_REDIRECT_URL = 'core:landing'
-

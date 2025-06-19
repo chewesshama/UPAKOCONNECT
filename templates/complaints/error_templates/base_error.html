@@ -1,0 +1,37 @@
+{% load static %} {% load custom_tag %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{% block title %} {% endblock title %}</title>
+
+    <link
+      href="https://fonts.googleapis.com/css?family=Montserrat:300,700"
+      rel="stylesheet"
+    />
+
+    <link
+      type="text/css"
+      href="{% static 'complaints/assets/css/404.css' %}"
+      rel="stylesheet"
+    />
+    <link href="{% static 'complaints/css/bootstrap.css' %}" rel="stylesheet" />
+  </head>
+
+  <body>
+    <div id="notfound">
+      <div class="notfound">
+        {% block error-content %} {% endblock error-content %}
+      </div>
+    </div>
+
+    {% block js %}
+      
+    {% endblock js %}
+    <script src="{% static 'complaints/js/bootstrap.js' %}" async defer></script>
+  </body>
+</html>

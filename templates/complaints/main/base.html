@@ -1,0 +1,253 @@
+{% load static %} {% load custom_tag %}
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+		<meta content="complaint management system" name="keywords" />
+		<meta
+			name="description"
+			content="system that's used by organizations to take their empleyees complaints and take action based on the guven complaint"
+		/>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>
+			{% block title %} COMPLAINTS MANAGEMENT STSTEM {% endblock title %}
+		</title>
+
+		{% block style %} {% endblock style %}
+		<link href="{% static 'complaints/assets/img/ictpack.png' %}" rel="icon" />
+
+		<link
+			href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+			rel="stylesheet"
+		/>
+
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+			integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
+			crossorigin="anonymous"
+		/>
+		<link
+			href="{% static 'complaints/assets/vendor/bootstrap-icons/bootstrap-icons.css' %}"
+			rel="stylesheet"
+		/>
+		<link
+			href="{% static 'complaints/assets/vendor/boxicons/css/boxicons.min.css' %}"
+			rel="stylesheet"
+		/>
+		<link
+			href="{% static 'complaints/assets/vendor/glightbox/css/glightbox.min.css' %}"
+			rel="stylesheet"
+		/>
+		<link
+			href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap"
+			rel="stylesheet"
+		/>
+		<link
+			rel="stylesheet"
+			href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+		/>
+		<link
+			href="{% static 'complaints/assets/vendor/remixicon/remixicon.css' %}"
+			rel="stylesheet"
+		/>
+		<link
+			href="{% static 'complaints/assets/vendor/swiper/swiper-bundle.min.css' %}"
+			rel="stylesheet"
+		/>
+		<link href="{% static 'complaints/assets/css/style.css' %}" rel="stylesheet" />
+		<link href="{% static 'complaints/css/bootstrap.css' %}" rel="stylesheet" />
+
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
+	</head>
+	<body hx-headers='{"x-CSRFToken": "{{ CSRF_token }}" }'>
+		{% if request.path == '/' %} {% elif user.is_authenticated %}
+		<!-- ======= Header ======= -->
+		<header id="header" class="d-flex align-items-center">
+			<div
+				class="container-fluid d-flex align-items-center justify-content-lg-between shadow-sm"
+			>
+				<h1 class="logo me-auto me-lg-0">
+					<a
+						href="{% url 'complaints:home' %}"
+						title="COMPLAINTS MANAGEMENT SYSTEM"
+						class="navbar-brand h1"
+						>
+						<img src="{% static 'complaints/assets/img/ictpack.png' %}" alt="ictPackLogo" width="30" height="24" class="d-inline-block align-text-top">
+						CMS
+					</a>
+				</h1>
+				<nav id="navbar" class="navbar order-last order-lg-0">
+					<ul>
+						{% if user|has_group:'CEO' or user.is_superuser %}
+
+						<li>
+							<a
+								class="nav-link scrollto"
+								id="nav-link-home"
+								href="{% url 'complaints:home' %}"
+								>Home</a
+							>
+						</li>
+						<li>
+							<a
+								class="nav-link scrollto"
+								id="nav-link-all-complaints"
+								href="{% url 'complaints:all_complaints_display' %}"
+								>Complaints</a
+							>
+						</li>
+						<li>
+							<a
+								class="nav-link scrollto"
+								id="nav-link-all-users"
+								href="{% url 'complaints:all_users_display' %}"
+								>Employees</a
+							>
+						</li>
+						<li>
+							<a class="nav-link scrollto" id="nav-link-admin-panel" href="{% url 'admin:index' %}"
+								>Admin</a
+							>
+						</li>
+						<li>
+							<a
+								class="nav-link scrollto"
+								id="nav-link-profile"
+								href="{% url 'complaints:profile' user.pk %}"
+								>Profile</a
+							>
+						</li>
+						<li>
+							<a class="nav-link scrollto" href="{% url 'complaints:logout' %}"
+								>Logout</a
+							>
+						</li>
+
+						{% elif user|has_group:'HOD' %}
+
+						<li>
+							<a
+								class="nav-link scrollto"
+								id="nav-link-home"
+								href="{% url 'complaints:home' %}"
+								>Home</a
+							>
+						</li>
+						<li>
+							<a
+								class="nav-link scrollto"
+								id="nav-link-department-complaints"
+								href="{% url 'complaints:all_complaints_display' %}"
+								>Department Complaints</a
+							>
+						</li>
+						<li>
+							<a
+								class="nav-link scrollto"
+								id="nav-link-all-users"
+								href="{% url 'complaints:all_users_display' %}"
+								>Department Employees</a
+							>
+						</li>
+						<li>
+							<a
+								class="nav-link scrollto"
+								id="nav-link-profile"
+								href="{% url 'complaints:profile' user.pk %}"
+								>Profile</a
+							>
+						</li>
+						<li>
+							<a class="nav-link scrollto" href="{% url 'complaints:logout' %}"
+								>Logout</a
+							>
+						</li>
+
+						{% else %}
+
+						<li>
+							<a
+								class="nav-link scrollto"
+								id="nav-link-home"
+								href="{% url 'complaints:home' %}"
+								>Home</a
+							>
+						</li>
+						<li>
+							<a
+								class="nav-link scrollto"
+								id="nav-link-my-complaints"
+								href="{% url 'complaints:user_complaints_display' %}"
+								>My Complaints</a
+							>
+						</li>
+						<li>
+							<a
+								class="nav-link scrollto"
+								id="nav-link-profile"
+								href="{% url 'complaints:profile' user.pk %}"
+								>Profile</a
+							>
+						</li>
+						<li>
+							<a class="nav-link scrollto" href="{% url 'complaints:logout' %}"
+								>Logout</a
+							>
+						</li>
+
+						{% endif %}
+					</ul>
+					<i class="bi bi-list mobile-nav-toggle"></i>
+				</nav>
+				<!-- .navbar -->
+			</div>
+		</header>
+		<!-- End Header -->
+		{% endif %}
+
+		<!--block for contents-->
+		<div>{% block content %} {% endblock content %}
+		</div>
+		<!--endblock for contents-->
+		<div id="modal" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  			<div id="dialog" class="modal-dialog modal-dialog-centered">
+				
+			</div>
+		</div>
+
+		<!-- Vendor JS Files -->
+		{% block js %} {% endblock js %}
+		<script
+			src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+			integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+			crossorigin="anonymous"
+		></script>
+		<script src="{% static 'complaints/assets/js/htmx.min.js' %}"></script>
+		<script src="{% static 'complaints/assets/js/dialog.js' %}"></script>
+		<script src="{% static 'complaints/assets/vendor/purecounter/purecounter_vanilla.js' %}"></script>
+		<script src="{% static 'complaints/assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
+		<script src="{% static 'complaints/assets/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
+		<script src="{% static 'complaints/assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="{% static 'complaints/js/bootstrap.js' %}" async defer></script>
+		<script src="{% static 'complaints/assets/js/main.js' %}"></script>
+		<script>
+			$(document).ready(function(){
+				$('[data-toggle="tooltip"]').tooltip();
+			});
+		</script>
+
+
+
+	</body>
+</html>

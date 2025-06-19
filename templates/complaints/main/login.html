@@ -1,0 +1,55 @@
+{% extends "complaints/main/base_form.html" %} 
+
+{% block form-content %}
+
+<h3 class="mb-4">Sign In</h3>
+<form method="post" class="signup-form my-5">
+  {% csrf_token %} {% if user.is_authenticated %}
+  <div class="row">
+    <div class="col-12">
+      <h3 class="py-2 text-center" style="color: orangered;">
+        You are already logged In as <span class="font-weight-bold text-uppercase">{{request.user}}</span>. Logout first, To switch account !
+      </h3>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6 form-group d-flex justify-content-center mt-5">
+      <abbr title="Home">
+        <a href="{% url 'complaints:home' %}">
+        <button type="button" class="btn btn-primary submit">
+          <span class="fa fa-home"></span>
+        </button>
+        </a>
+      </abbr>
+    </div>
+    <div class="col-sm-6 form-group d-flex justify-content-center mt-5">
+      <abbr title="Logout">
+        <a href="{% url 'complaints:logout' %}">
+        <button type="button" class="btn btn-primary submit">
+          <span class="fa fa-sign-out"></span>
+        </button>
+        </a>
+      </abbr>
+    </div>
+  </div>
+  {% else %} {% if form.errors %}
+  <div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>
+  {% endif %}
+
+  <div class="form-group">
+    {{ form.username.errors }} {{form.username.label_tag}} {{ form.username }}
+  </div>
+  <div class="form-group">
+    {{ form.password.errors }} {{form.password.label_tag}} {{form.password}}
+  </div>
+  <div class="form-group d-flex justify-content-end mt-5">
+    <abbr title="login">
+      <button type="submit" class="btn btn-primary submit">
+        <span class="fa fa-sign-in"></span>
+      </button>
+    </abbr>
+  </div>
+  {% endif %}
+</form>
+
+{% endblock form-content %}

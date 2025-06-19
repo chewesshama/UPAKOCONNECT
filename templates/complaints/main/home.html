@@ -1,0 +1,20 @@
+{% extends "complaints/main/base.html" %} 
+{% load static %} 
+
+{% block title %}
+Complaints management System 
+{% endblock title %} 
+
+{% block content %}
+<section id="hero">
+  <div class="hero-container">
+    <a
+      hx-get="{% url 'complaints:add_complaint' %}"
+      hx-target="#dialog"
+      class="btn-get-started scrollto shadow-lg rounded"
+      style="cursor: pointer;"
+      >Add Complaint Here</a
+    >
+  </div>
+</section>
+{% endblock content %}

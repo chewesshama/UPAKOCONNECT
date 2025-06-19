@@ -1,0 +1,75 @@
+{% extends "complaints/main/base.html" %} 
+{% load static %} 
+
+{% block content %}
+
+<section>
+  <div class="container p-3">
+    <section class="border shadow p-4 mb-4 d-flex flex-column">
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+          <div class="col-sm-4 d-flex">
+            <abbr title="add complaint">
+              <a
+                hx-get="{% url 'complaints:add_complaint' %}"
+                hx-target="#dialog"
+                class="nav-link text-light"
+                style="cursor: pointer;"
+                >
+              <button type="button" class="btn btn-secondary rounded submit shadow-sm">
+                <span class="fa fa-plus"></span>
+              </button>
+              </a>
+            </abbr>
+          </div>
+          <form method="get" class="form-inline my-2 my-lg-0">
+            <div class="input-group">
+              {{ user_search_form.search_query }}
+              <div class="input-group-append">
+                <button id="search-button" type="submit" class="btn rounded btn-outline-secondary">
+                  <i class="fa fa-search" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </nav>
+    </section>
+
+    <div class="list-group border shadow p-3">
+      <a href="#" class="list-group-item bg-secondary border mb-2 shadow rounded list-group-item-action active">
+        List of My Complaints
+      </a>
+      <table class="table table-hover" style="cursor: pointer;">
+        <thead>
+          <tr>
+            <th scope="col">TITLE</th>
+            <th scope="col">COMPLAINANT</th>
+            <th scope="col">TARGETED PERSONNEL</th>
+            <th scope="col">TARGETED DEPARTMENT</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for complaint in complaints %} 
+          {% if complaint %}
+              <tr>
+                <td>{{complaint.title|upper}}</td>
+                <td>{{ complaint.complainant|capfirst }}</td>
+                <td>{{ complaint.targeted_personnel|capfirst }}</td>
+                <td>{{ complaint.targeted_department|capfirst }}</td>
+                <td><a title="view details" href="{% url 'complaints:complaint_details' complaint.pk %}"><i class="fa fa-eye" style="color: #6c757d;" aria-hidden="true"></i></a></td>
+              </tr>
+          {% else %}
+            <p class="text-info my-3">You have no any complaint to display!!</p>
+          {% endif %}
+        {% endfor %}
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+</section>
+
+{% endblock content %}

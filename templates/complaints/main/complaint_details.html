@@ -1,0 +1,141 @@
+{% extends "complaints/main/base.html" %}
+{% load static %}
+
+{% block content %}
+
+    <section>
+      <div class="container p-2">
+        <div class="border shadow p-4">
+          <h2 class="my-2">{{complaint.title|upper}}</h2>
+          <ul class="list-group">
+            <li class="list-group-item m-1 bg-secondary border-secondary rounded shadow active" >
+              <div class="row justify-content-between">
+                <div class="col-sm-11">
+                  Complaint Details
+                </div>             
+                {% if latest_status == 'Closed' %}
+                <div class="col-sm-1">
+                  <abbr class="col-sm-2" title="delete Complaint">
+                    <a hx-get="{% url 'complaints:delete_complaint' complaint.pk %}" hx-target="#dialog" class="btn shadow btn-white m-1 btn-sm">
+                      <i class="fa fa-remove" style="font-size:20px; color:#e32249; cursor: pointer;"></i>
+                    </a>
+                  </abbr>
+                </div>
+                {% endif %}
+            </div>
+            </li>
+            <table class="table my-3">
+              <tbody>
+                <tr>
+                  <th scope="row">Title :</th>
+                  <td>{{ complaint.title|capfirst }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Descriptions :</th>
+                  <td>{{ complaint.description|capfirst }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Complainant :</th>
+                  <td>{{ complaint.complainant|capfirst }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Targeted Department :</th>
+                  <td>{{ complaint.targeted_department|capfirst }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Targeted Personnel :</th>
+                  <td>{{ complaint.targeted_personnel|capfirst }}</td>
+                </tr>
+                
+                  {% if latest_status == 'Opened' %}
+                  <tr>
+                    <th scope="row">Status :</th>
+                    <td class="font-weight-bold text-success">{{ latest_status|upper }}</td>
+                  </tr>
+                      {% if request.user == complaint.complainant %}
+                      <tr>
+                        <td>
+                          <button class="btn text-light btn-sm btn-secondary shadow">
+                            <a hx-get="{% url 'complaints:update_complaint' complaint.pk %}"
+                              hx-target="#dialog"
+                              class="nav-link text-light"
+                              >Update</a>
+                          </button>
+                        </td>
+                      </tr>
+                      {% endif %}
+                  {% elif latest_status == 'Forwarded' %}
+                  <tr>
+                    <th scope="row">Status :</th>
+                    <td class="font-weight-bold text-primary">{{ latest_status|upper }}</td>
+                  </tr>
+                      {% if request.user == complaint.complainant %}
+                      <tr>
+                        <td>
+                          <button class="btn text-light btn-sm btn-secondary shadow">
+                            <a hx-get="{% url 'complaints:update_complaint' complaint.pk %}"
+                              class="nav-link text-light"
+                              hx-target="#dialog"
+                              >Update</a>
+                          </button>
+                        </td>
+                      </tr>
+                      {% endif %}
+                  {% elif latest_status == 'Closed' %}
+                    <tr>
+                      <th scope="row">Status :</th>
+                      <td class="font-weight-bold text-danger">C L<i class="fa fa-ban m-1"></i>S E D</td>
+                    </tr>
+                  {% endif %}
+                </tr>
+              </tbody>
+            </table>
+          </ul>
+        </div>
+
+        <div class="container py-4 border shadow">
+          <h4 class="my-2">Remarks</h4>
+          {% for remark in remarks %}
+            <ul class="list-group my-1 pb-3">
+              <li class="list-group-item m-1 bg-light border-secondary rounded active">
+                <small>
+                <div class="row justify-content-between">
+                  <div class="col-sm-8 text-dark font-weight-bold">
+                    Remark By: {{ remark.respondent|capfirst }}
+                  </div>
+                  {% if request.user == remark.respondent and latest_status != "Closed" %}
+                  <div class="col-sm-1 justify-content-center ">
+                    <abbr class="col-sm-1" title="delete Remark">
+                      <a hx-get="{% url 'complaints:delete_remark' remark.pk %}" hx-target="#dialog" class="btn btn-sm">
+                        <i class="fa fa-remove" style="font-size:20px; color:#e32249; cursor: pointer;"></i>
+                      </a>
+                    </abbr>
+                  </div>
+                  <div class="col-sm-1 m-1">
+                    <a title="Edit" hx-get="{% url 'complaints:remark_update' remark.pk %}" hx-target="#dialog"><i class="fa fa-pencil " style="color: #6c757d; cursor: pointer; font-size: 20px;" aria-hidden="true"></i></a>
+                  </div>
+                  {% endif %}
+                  <div class="col-sm-1 m-1">
+                    <a title="view details" hx-get="{% url 'complaints:view_remark_details' remark.pk %}" hx-target="#dialog"><i class="fa fa-eye" style="color: #6c757d; cursor: pointer; font-size: 20px;" aria-hidden="true"></i></a>
+                  </div>
+                </div>
+                </small>
+              </li>
+            </ul>
+          {% empty %}
+            <ul class="list-group py-3">
+              <li class="text-danger list-unstyled">No remarks for this complaint.</li>
+            </ul>
+          {% endfor %}
+
+          {% if latest_status != "Closed" %}
+              <button class="btn text-dark shadow btn-secondary btn-sm my-2">
+                <a hx-get="{% url 'complaints:add_remark' complaint.pk %}" hx-target="#dialog" class="nav-link text-light">Add Remark</a>
+              </button>
+          {% endif %}
+        </div>
+
+      </div>
+    </section>
+
+{% endblock content %}

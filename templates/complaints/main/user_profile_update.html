@@ -1,0 +1,157 @@
+{% extends "complaints/main/base.html" %} 
+{% load static %} 
+
+{% block title %}
+Complaints management System 
+{% endblock title %} 
+
+{% block style %}
+<link
+  href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap"
+  rel="stylesheet"
+/>
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+/>
+<link rel="stylesheet" href="{% static 'complaints/assets/css/login.css' %}" />
+<link rel="stylesheet" href="{% static 'complaints/css/bootstrap.css' %}" />
+{% endblock style %} {% block content %}
+
+<section class="ftco-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-7 col-lg-5">
+        <div class="login-wrap p-4 p-md-5">
+          <h3 class="mb-4">Update Profile</h3>
+          <form
+            method="post"
+            class="signup-form my-5"
+            enctype="multipart/form-data"
+          >
+            {% csrf_token %} {{ form.non_field_errors }}
+            <div class="form-group">
+              {{form.first_name.label_tag}} {{ form.first_name }}
+              {% if form.first_name.errors %}
+              <div class="alert alert-danger" role="alert">
+                {{ form.first_name.errors }}
+              </div>
+              {% endif %} 
+            </div>
+
+            <div class="form-group">
+              {{form.last_name.label_tag}} {{ form.last_name }}
+              {% if form.last_name.errors %}
+              <div class="alert alert-danger" role="alert">
+                {{ form.last_name.errors }}
+              </div>
+              {% endif %} 
+            </div>
+
+            <div class="form-group">
+              {{form.username.label_tag}} {{ form.username }}
+              {% if form.username.errors %}
+              <div class="alert alert-danger" role="alert">
+                {{ form.username.errors }}
+              </div>
+              {% endif %} 
+            </div>
+            <div class="form-group">
+              {{form.email.label_tag}} {{ form.email }}
+              {% if form.email.errors %}
+              <div class="alert alert-danger" role="alert">
+                {{ form.email.errors }}
+              </div>
+              {% endif %} 
+            </div>
+            <div class="form-group">
+              {{form.profile_picture.label_tag}} 
+              {{ form.profile_picture }}
+              {% if form.profile_picture.errors %}
+              <div class="alert alert-danger" role="alert">
+                {{ form.profile_picture.errors }}
+              </div>
+              {% endif %} 
+              
+            </div>
+            <div class="form-group">
+              {{form.phone_number.label_tag}} 
+              {{ form.phone_number}}
+              {% if form.phone_number.errors %}
+              <div class="alert alert-danger" role="alert">
+                {{ form.phone_number.errors }}
+              </div>
+              {% endif %} 
+              
+            </div>
+            <div class="form-group">
+              {{form.region.label_tag}} 
+              {{ form.region }}
+              {% if form.region.errors %}
+              <div class="alert alert-danger" role="alert">
+                {{ form.region.errors }}
+              </div>
+              {% endif %} 
+              
+            </div>
+            <div class="form-group">
+              {{form.district.label_tag}} 
+              {{ form.district }}
+              {% if form.district.errors %}
+              <div class="alert alert-danger" role="alert">
+                {{ form.district.errors }}
+              </div>
+              {% endif %} 
+              
+            </div>
+            <div class="form-group d-flex justify-content-end">
+              <abbr title="submit">
+                <button type="submit" class="btn btn-primary submit">
+                  <span class="fa fa-check"></span>
+                </button>
+              </abbr>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container py-3">
+  {% endblock content %} {% block js %}
+  <script src="{% static 'complaints/assets/js/jquery.min.js' %}"></script>
+  <script src="{% static 'complaints/assets/js/popper.js' %}"></script>
+  <script src="{% static 'complaints/js/bootstrap.js' %}"></script>
+  <script src="{% static 'complaints/assets/js/login.js' %}"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+      $(document).ready(function () {
+          var regionSelect = $('#{{ form.region.id_for_label }}');
+          var districtSelect = $('#{{ form.district.id_for_label }}');
+
+          regionSelect.on('change', function () {
+              var selectedRegion = $(this).val();
+              if (selectedRegion) {
+                  districtSelect.show();
+                  $.ajax({
+                      url: '/get_districts/?region_name=' + selectedRegion,
+                      success: function (data) {
+                        districtSelect.empty();
+
+                        data.forEach(function (district) {
+                            districtSelect.append($('<option>', {
+                                value: district,
+                                text: district
+                            }));
+                        });
+
+                      }
+                  });
+              }
+          });
+      });
+  </script>
+
+  {% endblock js %}
+</div>

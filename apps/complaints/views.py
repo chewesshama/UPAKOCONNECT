@@ -17,11 +17,13 @@ from django.db.models import Case, When, Value, CharField
 from django.db.models import Q, Subquery
 from django.urls import reverse, reverse_lazy
 from django.http import HttpResponseForbidden, JsonResponse, Http404
-from mtaa import tanzania
-from .models import Complaint, Department, Remark
+#from mtaa import tanzania
+from .models import Complaint, Department, Remark, ComplaintAttachment, RemarkAttachment
 from apps.users.models import CustomUser
 from .forms import (
+    AttachmentFormSet,
     DepartmentForm,
+    RemarkAttachmentFormSet,
     UserProfileForm,
     CEORegistrationForm,
     HODRegistrationForm,
@@ -113,7 +115,7 @@ class UserRegistrationView(PermissionRequiredMixin, CreateView):
         user.save()
 
         if user_group and (user_group.name == "CEO" or self.request.user.is_superuser):
-            user.departments = department
+            user.department = department
             group = form.cleaned_data.get("group")
 
             if group.name == "CEO" or group.name == "HOD":
@@ -124,7 +126,7 @@ class UserRegistrationView(PermissionRequiredMixin, CreateView):
                 add_user_to_group(user, group)
                 user.save()
         elif user_group and user_group.name == "HOD":
-            user.departments = self.request.user.departments
+            user.department = self.request.user.department
             user.groups.set([Group.objects.get(name="EMPLOYEE")])
             user.save()
 
@@ -227,19 +229,23 @@ class AllUserDisplayView(PermissionRequiredMixin, ListView):
 
         queryset = CustomUser.objects.annotate(
             order=Case(
-                When(groups__name="CEO", then=Value(1)),
-                When(groups__name="HOD", then=Value(2)),
-                When(groups__name="EMPLOYEE", then=Value(3)),
-                default=Value(4),
+                When(groups__name="APOSTLE", then=Value(1)),
+                When(groups__name="PASTOR", then=Value(2)),
+                When(groups__name="CEO", then=Value(3)),
+                When(groups__name="MANAGER", then=Value(4)),
+                When(groups__name="NURSE", then=Value(5)),
+                When(groups__name="MAPOKEZI", then=Value(6)),
+                When(groups__name="WORKER", then=Value(7)),
+                default=Value(8),
                 output_field=IntegerField(),
             )
         )
 
-        if user.groups.filter(name="HOD").exists():
-            department = user.departments
+        if user.groups.filter(name="MANAGER").exists():
+            department = user.department
             if department:
-                queryset = queryset.exclude(departments=None)
-                queryset = queryset.filter(Q(departments=department) | Q(pk=user.pk))
+                queryset = queryset.exclude(department=None)
+                queryset = queryset.filter(Q(department=department) | Q(pk=user.pk))
             else:
                 queryset = queryset.filter(pk=user.pk)
 
@@ -307,10 +313,10 @@ class AllComplaintsDisplayView(PermissionRequiredMixin, ListView):
         user = self.request.user
         search_query = self.request.GET.get("search_query")
 
-        if user.groups.filter(name="CEO").exists() or user.is_superuser:
+        if user.groups.filter(name="CEO").exists() or user.groups.filter(name="APOSTLE").exists() or user.groups.filter(name="PASTOR").exists() or user.is_superuser:
             queryset = Complaint.objects.all()
-        elif user.groups.filter(name="HOD").exists():
-            department = user.departments
+        elif user.groups.filter(name="MANAGER").exists():
+            department = user.department
             if department:
                 queryset = Complaint.objects.filter(targeted_department=department)
             else:
@@ -342,7 +348,6 @@ class UserComplaintsDisplayView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         search_query = self.request.GET.get("search_query")
-        print("Search Query:", search_query)
 
         user_remarks_subquery = Remark.objects.filter(
             remark_targeted_personnel=self.request.user
@@ -362,7 +367,6 @@ class UserComplaintsDisplayView(LoginRequiredMixin, ListView):
                 | Q(targeted_department__name__icontains=search_query)
                 | Q(targeted_personnel__username__icontains=search_query)
             )
-            print("Filtered Queryset Count:", queryset.count())
 
         return queryset
 
@@ -406,7 +410,7 @@ class UpdateComplaintView(PermissionRequiredMixin, UpdateView):
 
 
 class UpdateComplaintDoneView(PermissionRequiredMixin, TemplateView):
-    permission_required = "complaint.change_complaint"
+    permission_required = "complaints.change_complaint"
     template_name = "complaints/main/complaint_update_done.html"
 
 
@@ -429,12 +433,12 @@ class ComplaintDetailsView(PermissionRequiredMixin, DetailView):
             ).exists()
         ):
             return complaint
-        elif user.groups.filter(name="CEO").exists():
+        elif user.groups.filter(name="CEO").exists() or user.groups.filter(name="APOSTLE").exists() or user.groups.filter(name="PASTOR").exists() or user.is_superuser :
             return complaint
-        elif user.groups.filter(name="HOD").exists() and (
-            user.departments == complaint.targeted_department
+        elif (user.groups.filter(name="MANAGER").exists()) and (
+            user.department == complaint.targeted_department
             or Remark.objects.filter(
-                complaint=complaint, remark_targeted_department=user.departments
+                complaint=complaint, remark_targeted_department=user.department
             ).exists()
         ):
             return complaint
@@ -453,50 +457,42 @@ class ComplaintDetailsView(PermissionRequiredMixin, DetailView):
         context["latest_status"] = latest_status
         return context
 
-
 @login_required
 def add_complaint(request):
     if request.method == "POST":
-        form = AddComplaintForm(request.POST, request.FILES)
-        if form.is_valid():
-            complaint = Complaint(
-                title=form.cleaned_data["title"],
-                description=form.cleaned_data["description"],
-                complainant=request.user,
-                targeted_department=form.cleaned_data["targeted_department"],
-                targeted_personnel=form.cleaned_data["targeted_personnel"],
-                status="Opened",
-            )
+        form = AddComplaintForm(request.POST)
+        attachment_formset = AttachmentFormSet(request.POST, request.FILES)
 
+        if form.is_valid() and attachment_formset.is_valid():
+            complaint = form.save(commit=False)
+            complaint.complainant = request.user
+            complaint.status = "Opened"
             complaint.save()
-            
-            for uploaded_file in request.FILES.getlist('attachments'):
-                attachment = Complaint(
-                    attachments=uploaded_file,
-                )
-                attachment.save()
-                complaint.attachments.add(attachment)
 
+            for attachment_form in attachment_formset:
+                if attachment_form.cleaned_data.get('file'):
+                    attachment_form.save(commit=False).complaint = complaint
+                    attachment_form.save()
             return redirect("complaints:user_complaints_display")
-
     else:
         form = AddComplaintForm()
-
-    context = {"form": form}
-    return render(request, "complaints/main/add_complaint_dialog.html", context)
-
+        attachment_formset = AttachmentFormSet(queryset=ComplaintAttachment.objects.none())
+    return render(request, "complaints/main/add_complaint_dialog.html", {
+        "form": form,
+        "attachment_formset": attachment_formset
+    })
 
 def is_authorized_user(user, complaint):
     if user == complaint.complainant:
         return True
 
     if (
-        user.groups.filter(name="HOD").exists()
-        and user.departments == complaint.targeted_department
+        user.groups.filter(name="MANAGER").exists()
+        and user.department == complaint.targeted_department
     ):
         return True
 
-    if user.is_superuser or user.groups.filter(name="CEO").exists():
+    if user.is_superuser or user.groups.filter(name="CEO").exists() or user.groups.filter(name="APOSTLE").exists() or user.groups.filter(name="PASTOR").exists():
         return True
 
     if Remark.objects.filter(complaint=complaint, remark_targeted_personnel=user).exists():
@@ -511,39 +507,57 @@ def add_remark(request, complaint_id):
     if is_authorized_user(request.user, complaint):
         if request.method == "POST":
             form = AddRemarkForm(
-                request.POST, request.FILES, initial={"complaint": complaint}
+                request.POST, request.FILES, complaint_instance=complaint
             )
-            if form.is_valid():
+            attachment_formset = RemarkAttachmentFormSet(
+                request.POST, request.FILES
+            )
+
+            print("Form valid?", form.is_valid())
+            print("Form errors:", form.errors)
+
+            if form.is_valid() and attachment_formset.is_valid():
                 remark = Remark(
-                    complaint=form.cleaned_data["complaint"],
+                    complaint=complaint,  # use the complaint from URL
                     content=form.cleaned_data["content"],
                     respondent=request.user,
-                    remark_targeted_department=form.cleaned_data[
-                        "remark_targeted_department"
-                    ],
-                    remark_targeted_personnel=form.cleaned_data[
-                        "remark_targeted_personnel"
-                    ],
+                    remark_targeted_department=form.cleaned_data["remark_targeted_department"],
+                    remark_targeted_personnel=form.cleaned_data["remark_targeted_personnel"],
                     status=form.cleaned_data["status"],
                 )
                 remark.save()
 
-                for uploaded_file in request.FILES.getlist('attachments'):
-                    attachment = Remark(
-                        attachments=uploaded_file,
-                    )
-                    attachment.save()
-                    remark.attachments.add(attachment)
+                for attachment_form in attachment_formset:
+                    if attachment_form.cleaned_data.get("file"):
+                        RemarkAttachment.objects.create(
+                            remark=remark,
+                            file=attachment_form.cleaned_data["file"]
+                        )
 
-                return redirect('complaints:complaint_details', pk=complaint.pk)
+                return redirect("complaints:complaint_details", pk=complaint.pk)
+
         else:
-            form = AddRemarkForm(initial={"complaint": complaint})
+            form = AddRemarkForm(
+                initial={"complaint": complaint},
+                complaint_instance=complaint
+            )
+            attachment_formset = RemarkAttachmentFormSet(
+                queryset=RemarkAttachment.objects.none()
+            )
 
-        context = {"complaint": complaint, "form": form}
-        return render(request, "complaints/main/add_remark_dialog.html", context)
-
+        return render(
+            request,
+            "complaints/main/add_remark_dialog.html",
+            {
+                "complaint": complaint,
+                "form": form,
+                "attachment_formset": attachment_formset
+            },
+        )
     else:
-        return render(request, 'complaints/error_templates/403.html', status=403)
+        return render(
+            request, "complaints/error_templates/403.html", status=403
+        )
 
 
 class RemarkAddedDone(LoginRequiredMixin, TemplateView):
@@ -568,18 +582,22 @@ class RemarkDetailView(PermissionRequiredMixin, DetailView):
             or user == remark.complaint.targeted_personnel
         ):
             return remark
-        elif user.groups.filter(name="CEO").exists():
+        elif user.groups.filter(name="CEO").exists() or user.groups.filter(name="PASTOR").exists() or user.groups.filter(name="APOSTLE").exists():
             return remark
-        elif user.groups.filter(name="HOD").exists() and (
-            user.departments == remark.respondent.departments
+        elif (user.groups.filter(name="MANAGER").exists()) and (
+            user.department == remark.respondent.department
             or remark.respondent.is_superuser
             or remark.respondent.groups.filter(name="CEO").exists()
+            or remark.respondent.groups.filter(name="APOSTLE").exists()
+            or remark.respondent.groups.filter(name="PASTOR").exists()
         ):
             return remark
-        elif user.groups.filter(name="HOD").exists() and (
-            user.departments == remark.complaint.complainant.departments
+        elif (remark.respondent.groups.filter(name="MANAGER").exists()) and (
+            user.department == remark.complaint.complainant.department
             or remark.complaint.complainant.is_superuser
             or remark.complaint.complainant.groups.filter(name="CEO").exists()
+            or remark.complaint.complainant.groups.filter(name="APOSTLE").exists()
+            or remark.complaint.complainant.groups.filter(name="PASTOR").exists()
         ):
             return remark
         else:
@@ -631,7 +649,11 @@ def has_special_permission(user):
     if (
         user.is_superuser
         or user.groups.filter(name="CEO").exists()
-        or user.groups.filter(name="HOD").exists()
+        or user.groups.filter(name="APOSTLE").exists()
+        or user.groups.filter(name="PASTOR").exists()
+        or user.groups.filter(name="MANAGER").exists()
+        or user.groups.filter(name="NURSE").exists()
+        or user.groups.filter(name="MAPOKEZI").exists()
     ):
         return True
     return False
@@ -653,6 +675,8 @@ def ceo_special_permission(user):
     if (
         user.is_superuser
         or user.groups.filter(name="CEO").exists()
+        or user.groups.filter(name="APOSTLE").exists()
+        or user.groups.filter(name="PASTOR").exists()
     ):
         return True
     return False

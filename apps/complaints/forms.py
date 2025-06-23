@@ -1,12 +1,11 @@
 from django import forms
+from django.forms import modelformset_factory
 from django.contrib.auth.forms import (
     UserCreationForm,
     AuthenticationForm,
     PasswordChangeForm,
 )
-from multiupload.fields import MultiMediaField
-# from multiupload.widgets import MultiFileInput
-from .models import Remark, Department, Complaint
+from .models import Remark, Department, Complaint, ComplaintAttachment, RemarkAttachment
 from apps.users.models import CustomUser
 from django.contrib.auth.models import Group
 #from mtaa import tanzania, districts
@@ -126,9 +125,6 @@ class LoginForm(AuthenticationForm):
         label="Password", widget=forms.PasswordInput(attrs={"class": "form-control"})
     )
 
-    username.label = "Username"
-    username.label_classes = ["text-danger"]
-
 
 class UserProfileForm(forms.ModelForm):
     first_name = forms.CharField(
@@ -217,12 +213,6 @@ class PasswordChangeCustomForm(PasswordChangeForm):
         fields = ["old_password", "new_password1", "new_password2"]
 
 
-class MultiFileField(forms.FileField):
-    def __init__(self, *args, **kwargs):
-        kwargs.setdefault("widget", forms.ClearableFileInput(attrs={"multiple": True}))
-        super().__init__(*args, **kwargs)
-
-
 class AddComplaintForm(forms.ModelForm):
     title = forms.CharField(
         label="title",
@@ -232,15 +222,6 @@ class AddComplaintForm(forms.ModelForm):
     description = forms.CharField(
         label="description",
         widget=forms.Textarea(attrs={"class": "form-control"}),
-    )
-
-    attachments = MultiMediaField(
-        min_num=1,
-        max_num=5,
-        max_file_size=1024 * 1024 * 5,
-        media_type="image",  # 'audio', 'video' or 'image'
-        widget=forms.ClearableFileInput(attrs={"class": "form-control"}),
-        required=False,
     )
 
     targeted_personnel = forms.ModelChoiceField(
@@ -267,10 +248,16 @@ class AddComplaintForm(forms.ModelForm):
         fields = [
             "title",
             "description",
-            "attachments",
             "targeted_department",
             "targeted_personnel",
         ]
+        
+AttachmentFormSet = modelformset_factory(
+    ComplaintAttachment,
+    fields=('file',),
+    extra=1,
+    widgets={'file': forms.ClearableFileInput(attrs={'class': 'form-control'})}
+)
 
 
 class UpdateComplaintForm(forms.ModelForm):
@@ -303,15 +290,6 @@ class AddRemarkForm(forms.ModelForm):
         label="description", widget=forms.Textarea(attrs={"class": "form-control"})
     )
 
-    attachments = MultiMediaField(
-        min_num=1,
-        max_num=5,
-        max_file_size=1024 * 1024 * 5,
-        media_type="image",  # 'audio', 'video' or 'image'
-        widget=forms.ClearableFileInput(attrs={"class": "form-control"}),
-        required = False,
-    )
-
     remark_targeted_personnel = forms.ModelChoiceField(
         queryset=CustomUser.objects.all(),
         label="Forward / respond to",
@@ -342,12 +320,26 @@ class AddRemarkForm(forms.ModelForm):
         fields = [
             "complaint",
             "content",
-            "attachments",
             "remark_targeted_department",
             "remark_targeted_personnel",
             "status",
         ]
 
+    def __init__(self, *args, **kwargs):
+        complaint_instance = kwargs.pop("complaint_instance", None)
+        super().__init__(*args, **kwargs)
+
+        self.fields["complaint"].disabled = True
+
+        if complaint_instance:
+            self.fields["complaint"].initial = complaint_instance
+
+RemarkAttachmentFormSet = modelformset_factory(
+    RemarkAttachment,
+    fields=('file',),
+    extra=1,
+    widgets={'file': forms.ClearableFileInput(attrs={'class': 'form-control'})}
+)
 
 class UpdateRemarkForm(forms.ModelForm):
     content = forms.CharField(

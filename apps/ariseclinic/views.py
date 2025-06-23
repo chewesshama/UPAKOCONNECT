@@ -6,3 +6,5 @@ class IndexView(LoginRequiredMixin ,TemplateView):
     template_name = "ariseclinic/home/index.html"
     
 
+class TablesDisplayView(TemplateView):
+    template_name = "ariseclinic/home/tables.html"

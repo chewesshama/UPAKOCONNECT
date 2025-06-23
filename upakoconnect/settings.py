@@ -31,6 +31,9 @@ INSTALLED_APPS = [
     'multiupload',
     "PIL",
     'widget_tweaks',
+    'phonenumber_field',
+    'django_countries',
+    'mtaa',
 ]
 
 CRISPY_TEMPLATE_PACK = "bootstrap4"

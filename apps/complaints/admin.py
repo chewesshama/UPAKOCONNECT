@@ -5,46 +5,16 @@ from .models import (
     Department,
     Remark,
     DepartmentHistory,
+    ComplaintAttachment,
+    RemarkAttachment
 )
-from apps.users.models import CustomUser
 
-
-class CustomUserAdmin(UserAdmin):
-    fieldsets = (
-        (
-            "User details",
-            {
-                "fields": [
-                    "username",
-                    "first_name",
-                    "last_name",
-                    "email",
-                    "is_superuser",
-                    "is_staff",
-                    "departments",
-                    "profile_picture",
-                    "phone_number",
-                    "region",
-                    "district",
-                ],
-            },
-        ),
-        (
-            "Groups",
-            {
-                "fields": [
-                    "groups",
-                ]
-            },
-        ),
-    )
-
-
-admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Department)
 admin.site.register(Complaint)
 admin.site.register(Remark)
 admin.site.register(DepartmentHistory)
+admin.site.register(ComplaintAttachment)
+admin.site.register(RemarkAttachment)
 
 
 #admin.site.site_header = "CMS admin area"

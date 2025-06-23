@@ -1,11 +1,11 @@
 {% extends "complaints/main/base.html" %} 
-{% load static %} 
+{% load static %} {% load custom_tag %}
 
 
 {% block content %}
 
 {% for group in request.user.groups.all %} 
-  {% if group.name == 'CEO' or request.user.is_superuser %}
+  {% if request.user.is_superuser or request.user|has_group:"CEO" %}
 
     <div class="container-fluid p-3">
       <section class="border p-4 mb-4 d-flex flex-column shadow">

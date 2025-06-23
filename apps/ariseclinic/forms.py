@@ -1,20 +1,20 @@
-#from django import forms
-#from django.contrib.auth.forms import (
-#    UserCreationForm,
-#    AuthenticationForm,
-#    PasswordChangeForm,
-#)
-#from .models import User
-#
-#
-#class LoginForm(AuthenticationForm):
-#    username = forms.CharField(
-#        label="Username", widget=forms.TextInput(attrs={"class": "form-control"})
-#    )
-#
-#    password = forms.CharField(
-#        label="Password", widget=forms.PasswordInput(attrs={"class": "form-control"})
-#    )
-#
-#    username.label = "Username"
-#    username.label_classes = ["text-danger"]
+from django import forms
+from mtaa import tanzania
+from .models import Patient
+
+class PatientForm(forms.ModelForm):
+    class Meta:
+        model = Patient
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Populate region choices
+        self.fields['delivery_place_region'].choices = [(r, r) for r in list(tanzania)]
+
+        # Dynamically load districts based on selected region
+        if 'delivery_place_region' in self.data:
+            region = self.data.get('delivery_place_region')
+            if region and region in list(tanzania):
+                self.fields['delivery_place_district'].choices = [(d, d) for d in list(tanzania.get(region).districts)]

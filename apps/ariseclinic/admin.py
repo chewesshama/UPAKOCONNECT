@@ -1,32 +1,30 @@
 from django.contrib import admin
-#from django.contrib.auth.admin import UserAdmin
-#from .models import (
-#    User,
-#)
-#
-#class CustomUserAdmin(UserAdmin):
-#    fieldsets = (
-#        (
-#            "User details",
-#            {
-#                "fields": [
-#                    "username",
-#                    "first_name",
-#                    "last_name",
-#                    "email",
-#                    "is_superuser",
-#                    "is_staff"
-#                ],
-#            },
-#        ),
-#        (
-#            "Groups",
-#            {
-#                "fields": [
-#                    "groups",
-#                ]
-#            },
-#        ),
-#    )
-#
-#admin.site.register(User, CustomUserAdmin)
+from .models import Patient, Baby, VisitRecord
+
+@admin.register(Patient)
+class PatientAdmin(admin.ModelAdmin):
+    list_display = (
+        'full_name',
+        'phone_number',
+        'nationality',
+        'expected_delivery_date',
+        'is_active_pregnancy',
+    )
+
+@admin.register(Baby)
+class BabyAdmin(admin.ModelAdmin):
+    list_display = (
+        'full_name',
+        'gender',
+        'dob',
+        'twins_status',
+        'health_status',
+    )
+
+@admin.register(VisitRecord)
+class VisitRecordAdmin(admin.ModelAdmin):
+    list_display = (
+        'patient',
+        'visit_date',
+        'seen_by',
+    )

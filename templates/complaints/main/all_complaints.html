@@ -4,7 +4,7 @@
 {% block content %}
 
 {% for group in request.user.groups.all %} 
-  {% if group.name == 'CEO' or request.user.is_superuser %}
+  {% if request.user.is_superuser or request.user|has_group:"CEO" %}
 
 
 <section>
@@ -87,19 +87,31 @@
           <table class="table table-hover">
             <tbody>
               <tr class="text-center">
-              {% if user_with_most_complaints %}
-                  <th style="cursor: pointer;">
-                    <a class="list-unstyled nav-link text-secondary" hx-get="{% url 'complaints:staff_user_profile' user_with_most_complaints.pk %}" hx-target="#dialog" title="View Profile">
-                    {% if user.profile_picture %} <img src="{{ user_with_most_complaints.profile_picture.url }}"
-                      class="rounded-circle account-img"" style="height: 80px; width: 80px; list-style: none !important; color: #6c757d !important;"
-                      alt="{{ user_with_most_complaints.username }}'s Profile Image"> 
-                    {% endif %}
-                     <p class="font-weight-bold list-unstyled" style="font-size:x-large; color: 6c757d !important;">{{ user_with_most_complaints.username|upper }}</p>
-                     </a>
-                  </th>
-              {% else %}
-                  <th>No user found.</th>
-              {% endif %}
+
+            {% if user_with_most_complaints %}
+              <th style="cursor: pointer;">
+                <a class="list-unstyled nav-link text-secondary" 
+                  hx-get="{% url 'complaints:staff_user_profile' user_with_most_complaints.pk %}" 
+                  hx-target="#dialog" 
+                  title="View Profile">
+                  
+                  {% if user_with_most_complaints.profile_picture %}
+                    <img src="{{ user_with_most_complaints.profile_picture.url }}"
+                        class="rounded-circle account-img"
+                        style="height: 80px; width: 80px; list-style: none !important; color: #6c757d !important;"
+                        alt="{{ user_with_most_complaints.username }}'s Profile Image">
+                  {% endif %}
+                  
+                  <p class="font-weight-bold list-unstyled" 
+                    style="font-size:x-large; color: #6c757d !important;">
+                    {{ user_with_most_complaints.username|upper }}
+                  </p>
+                </a>
+              </th>
+            {% else %}
+              <th>No user found.</th>
+            {% endif %}
+
               </tr>
             </tbody>
           </table>

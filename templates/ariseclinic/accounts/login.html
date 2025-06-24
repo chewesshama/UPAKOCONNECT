@@ -18,7 +18,7 @@
             </div>
             <div class="card-body px-lg-5 py-lg-5">
 
-              <form method="POST" action="{% url 'users:login' %}?next={{ request.GET.next }}">
+              <form method="POST" action="{% url 'ariseclinic:login' %}?next={{ request.GET.next }}">
 
                 {% csrf_token %}
 

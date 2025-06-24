@@ -1,7 +1,7 @@
 {% load static %}
 <nav id="navbar-main" class="navbar navbar-horizontal navbar-transparent navbar-main navbar-expand-lg navbar-light">
   <div class="container">
-    <a class="navbar-brand" href="/">
+    <a class="navbar-brand" href="{% url 'ariseclinic:index' %}">
       <img src="{% static 'clinic/assets/img/brand/ariselogo2.png' %}" alt="Arise Clinic" style="width: 150px; height: auto;">
   
     </a>
@@ -12,7 +12,7 @@
       <div class="navbar-collapse-header">
         <div class="row">
           <div class="col-6 collapse-brand">
-            <a href="/">
+            <a href="{% url 'ariseclinic:index' %}">
               <img src="{% static 'clinic/assets/img/brand/blue.png' %}">
             </a>
           </div>

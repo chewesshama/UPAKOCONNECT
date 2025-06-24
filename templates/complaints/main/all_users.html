@@ -5,7 +5,7 @@
 {% block content %}
 
 {% for group in request.user.groups.all %} 
-  {% if request.user.is_superuser or request.user|has_group:"CEO" %}
+  {% if request.user.is_superuser or request.user|has_group:"APOSTLE" or request.user|has_group:"PASTOR" %}
 
     <div class="container-fluid p-3">
       <section class="border p-4 mb-4 d-flex flex-column shadow">
@@ -210,7 +210,7 @@
       </div>
     </div>
 
-  {% elif group.name == 'HOD' %}
+  {% elif group.name == 'MANAGER' %}
 
     <div class="container p-3">
       <section class="border p-4 mb-4 d-flex flex-column shadow">

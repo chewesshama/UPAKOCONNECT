@@ -10,7 +10,6 @@ from apps.users.models import CustomUser
 from django.contrib.auth.models import Group
 #from mtaa import tanzania, districts
 
-
 class DepartmentForm(forms.ModelForm):
     name = forms.CharField(
         label="name", widget=forms.TextInput(attrs={"class": "form-control"})

@@ -7,7 +7,6 @@ from django.conf import settings
 from apps.core.utils import get_regions
 
 
-
 DELIVERY_METHODS = [
     ("normal", "Normal Delivery"),
     ("cesarean", "Cesarean Section"),

@@ -23,15 +23,15 @@ class CustomUserLoginView(LoginView):
         return reverse_lazy("ariseclinic:index")
 
 
-class UserRegisterView(SuccessMessageMixin, CreateView):
-    model = CustomUser
-    form_class = CustomUserForm
-    template_name = 'ariseclinic/accounts/register.html'
-    success_url = reverse_lazy('users:login')
-    success_message = "Account created successfully! You can now login."
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['msg'] = ''
-        context['success'] = False
-        return context
+#class UserRegisterView(SuccessMessageMixin, CreateView):
+#    model = CustomUser
+#    form_class = CustomUserForm
+#    template_name = 'ariseclinic/accounts/register.html'
+#    success_url = reverse_lazy('users:login')
+#    success_message = "Account created successfully! You can now login."
+#
+#    def get_context_data(self, **kwargs):
+#        context = super().get_context_data(**kwargs)
+#        context['msg'] = ''
+#        context['success'] = False
+#        return context

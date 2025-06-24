@@ -2,104 +2,290 @@
 
 {% block title %} Register {% endblock title %}
 
-{% block stylesheets %}{% endblock stylesheets %}
+{% block stylesheets %}
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/nucleo-icons@latest/css/nucleo.css" rel="stylesheet">
+{% endblock stylesheets %}
 
 {% block content %}
-
-    <!-- Page content -->
-    <div class="container mt--8 pb-5">
-      <!-- Table -->
-      <div class="row justify-content-center">
-        <div class="col-lg-6 col-md-8">
-        
-          <div class="card bg-secondary shadow border-0">
-            <div class="card-header bg-transparent pb-5">
-              <div class="text-muted text-center mt-2 mb-4">
-                Register User
+<div class="container mt--8 pb-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10">
+      <div class="card shadow border-0">
+        <div class="card-header bg-transparent pb-5">
+          <div class="text-muted text-center mt-2 mb-4">REGISTER USER</div>
+        </div>
+        <div class="card-body px-lg-5 py-lg-5">
+          <div class="text-center text-muted mb-4">
+            {% if messages %}
+              {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+              {% endfor %}
+            {% endif %}
+            {% if form.errors %}
+              <div class="alert alert-danger">
+                <strong>Errors:</strong>
+                {{ form.non_field_errors }}
+                {% for field in form %}
+                  {{ field.errors }}
+                {% endfor %}
               </div>
-            </div>
-            <div class="card-body px-lg-5 py-lg-5">
-              <div class="text-center text-muted mb-4">
-
-                {% if msg %}
-                  <small>{{ msg | safe }}</small>
-                {% else %}
-                {% endif %}  
-              
-              </div>
-
-              {% if not success %}
-
-                <form method="POST" action="{% url 'users:register' %}">
-
-                  {% csrf_token %}
-            
-                  <div class="form-group">
-                    <div class="input-group input-group-alternative mb-3">
-                      <div class="input-group-prepend">
-                        {{ form.non_field_errors }}
-                        <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
-                      </div>
-                      {{ form.username }}
-                    </div>
-                  </div>
-                  <span class="text-error">{{ form.username.errors }}</span>
-
-                  <div class="form-group">
-                    <div class="input-group input-group-alternative mb-3">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="ni ni-email-83"></i></span>
-                      </div>
-                      {{ form.email }}
-                    </div>
-                  </div>
-                  <span class="text-error">{{ form.email.errors }}</span>
-
-                  <div class="form-group">
-                    <div class="input-group input-group-alternative">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
-                      </div>
-                      {{ form.password1 }}
-                    </div>
-                  </div>
-                  <span class="text-error">{{ form.password1.errors }}</span>
-
-                  <div class="form-group">
-                    <div class="input-group input-group-alternative">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
-                      </div>
-                      {{ form.password2 }}
-                    </div>
-                  </div>
-                  <span class="text-error">{{ form.password2.errors }}</span>
-
-                  <div class="row my-4">
-                    <div class="col-12">
-                      <div class="custom-control custom-control-alternative custom-checkbox">
-                        <input class="custom-control-input" id="customCheckRegister" type="checkbox">
-
-                      </div>
-                    </div>
-                  </div>
-                  <div class="text-center">
-                    <button type="submit" class="btn btn-primary mt-4">Register</button>
-                  </div>
-                </form>
-
-              {% endif %}  
-  
-            </div>
+            {% endif %}
           </div>
 
+          <form method="POST" action="{% url 'ariseclinic:register' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="form-group">
+              <div class="row">
+                <div class="col-md-6">
+                  <label for="{{ form.first_name.id_for_label }}">First Name</label>
+                  <div class="input-group input-group-alternative mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
+                    </div>
+                    {{ form.first_name }}
+                  </div>
+                  <span class="text-error">{{ form.first_name.errors }}</span>
+                </div>
+                <div class="col-md-6">
+                  <label for="{{ form.last_name.id_for_label }}">Last Name</label>
+                  <div class="input-group input-group-alternative mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
+                    </div>
+                    {{ form.last_name }}
+                  </div>
+                  <span class="text-error">{{ form.last_name.errors }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="{{ form.username.id_for_label }}">Username</label>
+              <div class="input-group input-group-alternative mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
+                </div>
+                {{ form.username }}
+              </div>
+              <span class="text-error">{{ form.username.errors }}</span>
+            </div>
+
+            <div class="form-group">
+              <label for="{{ form.email.id_for_label }}">Email</label>
+              <div class="input-group input-group-alternative mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="ni ni-email-83"></i></span>
+                </div>
+                {{ form.email }}
+              </div>
+              <span class="text-error">{{ form.email.errors }}</span>
+            </div>
+
+            <div class="form-group">
+              <div class="row">
+                <div class="col-md-6">
+                  <label for="{{ form.gender.id_for_label }}">Gender</label>
+                  <div class="input-group input-group-alternative mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="ni ni-single-02"></i></span>
+                    </div>
+                    {{ form.gender }}
+                  </div>
+                  <span class="text-error">{{ form.gender.errors }}</span>
+                </div>
+                <div class="col-md-6">
+                  <label for="{{ form.marital_status.id_for_label }}">Marital Status</label>
+                  <div class="input-group input-group-alternative mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="ni ni-single-02"></i></span>
+                    </div>
+                    {{ form.marital_status }}
+                  </div>
+                  <span class="text-error">{{ form.marital_status.errors }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="{{ form.nationality.id_for_label }}">Nationality</label>
+              <div class="input-group input-group-alternative mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="ni ni-world"></i></span>
+                </div>
+                {{ form.nationality }}
+              </div>
+              <span class="text-error">{{ form.nationality.errors }}</span>
+            </div>
+
+            <div class="form-group">
+              <label for="{{ form.phone_number.id_for_label }}">Phone Number</label>
+              <div class="input-group input-group-alternative mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="ni ni-mobile-button"></i></span>
+                </div>
+                {{ form.phone_number }}
+              </div>
+              <span class="text-error">{{ form.phone_number.errors }}</span>
+            </div>
+
+            <div class="form-group">
+              <div class="row">
+                <div class="col-md-6">
+                  <label for="{{ form.department.id_for_label }}">Department</label>
+                  <div class="input-group input-group-alternative mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="ni ni-building"></i></span>
+                    </div>
+                    {{ form.department }}
+                  </div>
+                  <span class="text-error">{{ form.department.errors }}</span>
+                </div>
+                <div class="col-md-6">
+                  <label for="{{ form.role.id_for_label }}">Position</label>
+                  <div class="input-group input-group-alternative mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
+                    </div>
+                    {{ form.role }}
+                  </div>
+                  <span class="text-error">{{ form.role.errors }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="row">
+                <div class="col-md-4">
+                  <label for="{{ form.region.id_for_label }}">Region</label>
+                  <div class="input-group input-group-alternative mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="ni ni-square-pin"></i></span>
+                    </div>
+                    {{ form.region }}
+                  </div>
+                  <span class="text-error">{{ form.region.errors }}</span>
+                </div>
+                <div class="col-md-4">
+                  <label for="{{ form.district.id_for_label }}">District</label>
+                  <div class="input-group input-group-alternative mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="ni ni-square-pin"></i></span>
+                    </div>
+                    {{ form.district }}
+                  </div>
+                  <span class="text-error">{{ form.district.errors }}</span>
+                </div>
+                <div class="col-md-4">
+                  <label for="{{ form.ward.id_for_label }}">Ward</label>
+                  <div class="input-group input-group-alternative mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="ni ni-square-pin"></i></span>
+                    </div>
+                    {{ form.ward }}
+                  </div>
+                  <span class="text-error">{{ form.ward.errors }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="{{ form.profile_picture.id_for_label }}">Profile Picture</label>
+              <div class="input-group input-group-alternative mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="ni ni-image"></i></span>
+                </div>
+                {{ form.profile_picture }}
+              </div>
+              <span class="text-error">{{ form.profile_picture.errors }}</span>
+            </div>
+
+            <div class="form-group">
+              <label for="{{ form.password1.id_for_label }}">Password</label>
+              <div class="input-group input-group-alternative mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
+                </div>
+                {{ form.password1 }}
+              </div>
+              <span class="text-error">{{ form.password1.errors }}</span>
+            </div>
+
+            <div class="form-group">
+              <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+              <div class="input-group input-group-alternative mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
+                </div>
+                {{ form.password2 }}
+              </div>
+              <span class="text-error">{{ form.password2.errors }}</span>
+            </div>
+
+
+            <div class="text-center">
+              <button type="submit" class="btn btn-primary mt-4">Register</button>
+            </div>
+          </form>
         </div>
       </div>
-
     </div>
   </div>
-
+</div>
 {% endblock content %}
 
-<!-- Specific JS goes HERE --> 
-{% block javascripts %}{% endblock javascripts %}
+{% block javascripts %}
+<script>
+document.getElementById('id_region').addEventListener('change', function() {
+    const region = this.value;
+    const districtSelect = document.getElementById('id_district');
+    const wardSelect = document.getElementById('id_ward');
+    
+    districtSelect.innerHTML = '<option value="">Select District</option>';
+    wardSelect.innerHTML = '<option value="">Select Ward</option>';
+
+    if (region) {
+        fetch("{% url 'ariseclinic:get_districts' %}?region=" + encodeURIComponent(region))
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                data.districts.forEach(district => {
+                    const option = document.createElement('option');
+                    option.value = district;
+                    option.text = district;
+                    districtSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching districts:', error));
+    }
+});
+
+document.getElementById('id_district').addEventListener('change', function() {
+    const region = document.getElementById('id_region').value;
+    const district = this.value;
+    const wardSelect = document.getElementById('id_ward');
+    
+    wardSelect.innerHTML = '<option value="">Select Ward</option>';
+
+    if (region && district) {
+        fetch("{% url 'ariseclinic:get_wards' %}?region=" + encodeURIComponent(region) + "&district=" + encodeURIComponent(district))
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                data.wards.forEach(ward => {
+                    const option = document.createElement('option');
+                    option.value = ward;
+                    option.text = ward;
+                    wardSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching wards:', error));
+    }
+});
+</script>
+{% endblock javascripts %}
